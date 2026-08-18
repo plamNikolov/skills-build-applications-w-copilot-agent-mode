@@ -1,49 +1,49 @@
 import express from 'express';
-import User from '../models/User.js';
+import { asyncHandler } from '../middleware/index.js';
+import { validateRequest } from '../middleware/validation.js';
+import { UserService } from '../services/UserService.js';
 
 const router = express.Router();
 
 // Register new user
-router.post('/register', async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
-
-    const user = new User({
-      username,
-      email,
-      password,
-    });
-
-    await user.save();
+router.post(
+  '/register',
+  validateRequest([
+    { field: 'username', type: 'string', required: true, minLength: 3, maxLength: 30 },
+    { field: 'email', type: 'email', required: true },
+    { field: 'password', type: 'string', required: true, minLength: 6 },
+  ]),
+  asyncHandler(async (req, res) => {
+    const user = await UserService.createUser(req.body);
     res.status(201).json({ message: 'User created successfully', user });
-  } catch (error) {
-    res.status(400).json({ error: error instanceof Error ? error.message : 'Unknown error' });
-  }
-});
+  })
+);
 
 // Get user profile
-router.get('/:id', async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id).populate('teams');
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+router.get(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    const user = await UserService.getUserProfile(req.params.id);
     res.json(user);
-  } catch (error) {
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
-  }
-});
+  })
+);
 
 // Update user profile
-router.put('/:id', async (req, res) => {
-  try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+router.put(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    const user = await UserService.updateUser(req.params.id, req.body);
     res.json(user);
-  } catch (error) {
-    res.status(400).json({ error: error instanceof Error ? error.message : 'Unknown error' });
-  }
-});
+  })
+);
+
+// Search users
+router.get(
+  '/search/:query',
+  asyncHandler(async (req, res) => {
+    const users = await UserService.searchUsers(req.params.query);
+    res.json(users);
+  })
+);
 
 export default router;

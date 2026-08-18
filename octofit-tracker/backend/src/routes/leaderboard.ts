@@ -1,46 +1,45 @@
 import express from 'express';
-import Leaderboard from '../models/Leaderboard.js';
+import { asyncHandler } from '../middleware/index.js';
+import { LeaderboardService } from '../services/LeaderboardService.js';
 
 const router = express.Router();
 
-// Get leaderboard
-router.get('/', async (req, res) => {
-  try {
-    const leaderboard = await Leaderboard.find()
-      .populate('user')
-      .populate('team')
-      .sort({ score: -1 });
+// Get global leaderboard
+router.get(
+  '/',
+  asyncHandler(async (req, res) => {
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+    const leaderboard = await LeaderboardService.getGlobalLeaderboard(limit);
     res.json(leaderboard);
-  } catch (error) {
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
-  }
-});
+  })
+);
 
 // Get team leaderboard
-router.get('/team/:teamId', async (req, res) => {
-  try {
-    const leaderboard = await Leaderboard.find({ team: req.params.teamId })
-      .populate('user')
-      .sort({ score: -1 });
+router.get(
+  '/team/:teamId',
+  asyncHandler(async (req, res) => {
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+    const leaderboard = await LeaderboardService.getTeamLeaderboard(req.params.teamId, limit);
     res.json(leaderboard);
-  } catch (error) {
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
-  }
-});
+  })
+);
 
-// Update user leaderboard stats
-router.put('/:userId', async (req, res) => {
-  try {
-    const { score, activitiesCount, totalDistance, totalDuration } = req.body;
-    const entry = await Leaderboard.findOneAndUpdate(
-      { user: req.params.userId },
-      { score, activitiesCount, totalDistance, totalDuration },
-      { new: true, upsert: true }
-    );
-    res.json(entry);
-  } catch (error) {
-    res.status(400).json({ error: error instanceof Error ? error.message : 'Unknown error' });
-  }
-});
+// Get user rank
+router.get(
+  '/user/:userId/rank',
+  asyncHandler(async (req, res) => {
+    const rank = await LeaderboardService.getUserRank(req.params.userId);
+    res.json(rank);
+  })
+);
+
+// Get team ranking stats
+router.get(
+  '/team/:teamId/stats',
+  asyncHandler(async (req, res) => {
+    const stats = await LeaderboardService.getTeamRanking(req.params.teamId);
+    res.json(stats);
+  })
+);
 
 export default router;
