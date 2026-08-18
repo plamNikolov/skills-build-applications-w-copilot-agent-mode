@@ -8,6 +8,10 @@ import teamsRouter from './routes/teams.js';
 import activitiesRouter from './routes/activities.js';
 import workoutsRouter from './routes/workouts.js';
 import leaderboardRouter from './routes/leaderboard.js';
+const codespaceName = process.env.CODESPACE_NAME;
+const baseUrl = codespaceName
+    ? `https://${codespaceName}-8000.app.github.dev`
+    : 'http://localhost:8000';
 const app = express();
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -18,7 +22,7 @@ app.get('/api/health', (req, res) => {
         status: 'ok',
         message: 'Octofit Tracker API is running',
         timestamp: new Date().toISOString(),
-        baseUrl: config.baseUrl,
+        baseUrl,
     });
 });
 app.use('/api/users', usersRouter);
@@ -33,7 +37,7 @@ export async function start() {
     try {
         await connectDatabase();
         app.listen(PORT, () => {
-            console.log(`🐙 Octofit Tracker API running on ${config.baseUrl}`);
+            console.log(`🐙 Octofit Tracker API running on ${baseUrl}`);
             console.log(`Environment: ${config.nodeEnv}`);
             console.log(`Database: ${config.mongoDbUri}`);
         });
