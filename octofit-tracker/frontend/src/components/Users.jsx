@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { normalizeArrayResponse } from '../config/api';
 
-const apiBase = import.meta.env.VITE_CODESPACE_NAME
-  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev`
-  : 'http://localhost:8000';
-const usersApiUrl = `${apiBase}/api/users/search/test`;
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME;
+const usersApiUrl = codespaceName
+  ? `https://${codespaceName}-8000.app.github.dev/api/users/search/test`
+  : 'http://localhost:8000/api/users/search/test';
 
 function Users() {
   const [users, setUsers] = useState([]);

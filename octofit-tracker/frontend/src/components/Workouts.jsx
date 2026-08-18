@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { normalizeArrayResponse } from '../config/api';
 
-const apiBase = import.meta.env.VITE_CODESPACE_NAME
-  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev`
-  : 'http://localhost:8000';
-const workoutsApiUrl = `${apiBase}/api/workouts/`;
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME;
+const workoutsApiUrl = codespaceName
+  ? `https://${codespaceName}-8000.app.github.dev/api/workouts/`
+  : 'http://localhost:8000/api/workouts/';
 
 function Workouts() {
   const [workouts, setWorkouts] = useState([]);

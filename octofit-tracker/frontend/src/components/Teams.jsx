@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { normalizeArrayResponse } from '../config/api';
 
-const apiBase = import.meta.env.VITE_CODESPACE_NAME
-  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev`
-  : 'http://localhost:8000';
-const teamsApiUrl = `${apiBase}/api/teams/`;
+const codespaceName = import.meta.env.VITE_CODESPACE_NAME;
+const teamsApiUrl = codespaceName
+  ? `https://${codespaceName}-8000.app.github.dev/api/teams/`
+  : 'http://localhost:8000/api/teams/';
 
 function Teams() {
   const [teams, setTeams] = useState([]);
