@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Octofit Tracker API backend",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "src/server.ts",
   "scripts": {
-    "dev": "node --loader ts-node/esm src/index.ts",
+    "dev": "node --loader ts-node/esm src/server.ts",
     "build": "tsc",
     "seed": "node --loader ts-node/esm src/scripts/seed.ts"
   },
