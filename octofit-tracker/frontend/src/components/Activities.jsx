@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import { buildApiUrl, normalizeArrayResponse } from '../config/api';
+import { normalizeArrayResponse } from '../config/api';
+
+const apiBase = import.meta.env.VITE_CODESPACE_NAME
+  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev`
+  : 'http://localhost:8000';
+const activitiesApiUrl = `${apiBase}/api/activities/`;
 
 function Activities() {
   const [activities, setActivities] = useState([]);
@@ -16,7 +21,7 @@ function Activities() {
   const fetchActivities = async () => {
     try {
       setLoading(true);
-      const response = await fetch(buildApiUrl('/activities/'));
+      const response = await fetch(activitiesApiUrl);
       if (!response.ok) {
         throw new Error('Unable to load activities.');
       }
@@ -46,7 +51,7 @@ function Activities() {
     event.preventDefault();
 
     try {
-      const response = await fetch(buildApiUrl('/activities/'), {
+      const response = await fetch(activitiesApiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

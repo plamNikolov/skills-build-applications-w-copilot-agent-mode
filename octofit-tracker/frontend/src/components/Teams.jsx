@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import { buildApiUrl, normalizeArrayResponse } from '../config/api';
+import { normalizeArrayResponse } from '../config/api';
+
+const apiBase = import.meta.env.VITE_CODESPACE_NAME
+  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev`
+  : 'http://localhost:8000';
+const teamsApiUrl = `${apiBase}/api/teams/`;
 
 function Teams() {
   const [teams, setTeams] = useState([]);
@@ -13,7 +18,7 @@ function Teams() {
   const fetchTeams = async () => {
     try {
       setLoading(true);
-      const response = await fetch(buildApiUrl('/teams/'));
+      const response = await fetch(teamsApiUrl);
       if (!response.ok) {
         throw new Error('Unable to load teams.');
       }
@@ -43,7 +48,7 @@ function Teams() {
     event.preventDefault();
 
     try {
-      const response = await fetch(buildApiUrl('/teams/'), {
+      const response = await fetch(teamsApiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
